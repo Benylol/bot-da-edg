@@ -2,7 +2,7 @@
 const { Client, GatewayIntentBits } = require("discord.js");
 const express = require("express");
 
-// ====== Create Discord client ======
+// ====== criar client ======
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -11,19 +11,19 @@ const client = new Client({
   ],
 });
 
-// ====== Log when bot is online ======
+// ====== Log quando online ======
 client.once("ready", () => {
   console.log(`✅ Bot online as ${client.user.tag}`);
 });
 
 // ====== TicketTool Category IDs ======
-const REGEAR_CATEGORY_ID = "1430080995733798983";
-const RECRUIT_CATEGORY_ID = "1355629033496248552";
+const REGEAR_CATEGORY_ID = "1430080995733798983"; // 🛡️ Regear category
+const RECRUIT_CATEGORY_ID = "1355629033496248552"; // 📜 Recruit category
 
-// ====== When a new channel is created ======
+// ====== RESPONDER MENSAGENS DE TICKET ======
 client.on("channelCreate", async (channel) => {
   try {
-    // Only act on normal text channels inside a guild
+    // Only handle normal text channels inside a guild
     if (!channel.guild || channel.type !== 0) return;
 
     // 🛡️ REGEAR Ticket
@@ -46,7 +46,7 @@ client.on("channelCreate", async (channel) => {
           `📜 **Formulário de Registro** 📜\n\n` +
           `🏴‍☠️ **EdgeRunners** 🏴‍☠️\n\n` +
           `Seja bem-vindo ao processo de inscrição da Edgerunners!\n` +
-          `Para garantir que você se encaixa no perfil da guilda, preencha o formulário abaixo com atenção e envie-o no ticket \n\n` +
+          `Para garantir que você se encaixa no perfil da guilda, preencha o formulário abaixo com atenção e envie-o no chat.\n\n` +
           `📝 **Informações Básicas**\n` +
           `🔹 Nick no Albion:\n` +
           `🔹 ID do Discord:\n\n` +
@@ -67,25 +67,29 @@ client.on("channelCreate", async (channel) => {
       console.log(`📜 Recruit ticket detected: ${channel.name}`);
     }
   } catch (err) {
-    console.error("Error handling new channel:", err);
+    console.error("❌ Error handling new channel:", err);
   }
 });
-// ====== Respond when bot is pinged ======
+
+// ====== Respond when bot is pinged (resposta unica) ======
 client.on("messageCreate", async (message) => {
   // Ignore messages from bots (including itself)
   if (message.author.bot) return;
 
-  // Check if the bot was mentioned
-  if (message.mentions.has(client.user)) {
-    await message.reply({
+  // Ignore messages outside servers (DMs)
+  if (!message.guild) return;
+
+  // Respond only if directly mentioned (not @everyone)
+  if (message.mentions.has(client.user) && !message.mentions.everyone) {
+    await message.channel.send({
       content: "👋 Opa! Edgerunners melhor guilda do Albion, mariz melhor player! ⚔️",
     });
   }
 });
 
-// ====== Keep-alive Express server for Render ======
+// ====== Keep-alive Render ======
 const app = express();
-app.get("/", (req, res) => res.send("Bot is running!"));
+app.get("/", (req, res) => res.send("Bot is running and alive!"));
 app.listen(3000, () => console.log("🌐 Keep-alive web server running on port 3000"));
 
 // ====== Login ======
