@@ -70,6 +70,18 @@ client.on("channelCreate", async (channel) => {
     console.error("Error handling new channel:", err);
   }
 });
+// ====== Respond when bot is pinged ======
+client.on("messageCreate", async (message) => {
+  // Ignore messages from bots (including itself)
+  if (message.author.bot) return;
+
+  // Check if the bot was mentioned
+  if (message.mentions.has(client.user)) {
+    await message.reply({
+      content: "👋 Opa! Edgerunners melhor guilda do Albion, mariz melhor player! ⚔️",
+    });
+  }
+});
 
 // ====== Keep-alive Express server for Render ======
 const app = express();
